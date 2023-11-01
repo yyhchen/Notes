@@ -224,21 +224,17 @@ $$
 
 
 **左对齐：**
-$
-\begin{aligned}
+$\begin{aligned}
 y &=(x+5)^2-(x+1)^2 \\
 &=(x^2+10x+25)-(x^2+2x+1) \\
 &=8x+24 \\
-\end{aligned} 
-$
+\end{aligned}$
 
-$
-\begin{cases}
+$\begin{cases}
 y &=(x+5)^2-(x+1)^2 \\
 &=(x^2+10x+25)-(x^2+2x+1) \\
 &=8x+24 \\
-\end{cases} 
-$
+\end{cases}$
 
 
 8.方程式
@@ -285,6 +281,7 @@ $$
 1 & 1 & \cdots & 1 \\
 \end{vmatrix}
 $$
+![行列式](vmatrix.png)
 
 **并排写法：**
 
@@ -303,6 +300,7 @@ $
 \end{bmatrix}
 $
 
+![看不到就看这里](highlight.png)
 
 10.特殊符号
 ---
