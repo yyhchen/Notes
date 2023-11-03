@@ -20,4 +20,38 @@ $\quad$
 
 * **效果图**
 $\quad$
-![效果图](renderings.jpg)
+![Alt text](rendering.png)
+
+$\quad$
+* **记录下配置文件内容**
+
+`Import-Module oh-my-posh`
+
+`oh-my-posh init pwsh --config "C:\Users\yuehu\AppData\Local\Programs\oh-my-posh\themes\yhchen.omp.json" | Invoke-Expression`
+
+`Import-Module -Name Terminal-Icons`
+
+![Alt text](image.png)
+
+
+* **同样记录下yhchen.omp.json文件的详细内容**
+
+我在 `bubblesextra.omp.json`基础上进行 **时间块** 的增加，详细内容如下：
+
+```json{.line-numbers}
+        {
+          "background": "#29315A",
+          "foreground": "#cd28cd",
+          "leading_diamond": " \ue0b6",
+          "properties": {
+            "time_format": "15:04:05"
+          },
+          "style": "diamond",
+          "template": " {{ .CurrentDate | date .Format }} ",
+          "trailing_diamond": "\ue0b4",
+          "type": "time"
+        },
+```
+( **下图红框表示的是插入的位置** )
+
+![Alt text](<position insert.png>)
