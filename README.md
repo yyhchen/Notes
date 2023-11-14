@@ -14,3 +14,9 @@ $\quad$
 $\quad$
 ## windows oh-my-posh
 * `oh-my-posh`在**windows**上的一些配置(相当于**mac**的`oh-my-zsh`，由于换设备不习惯powershell的界面 <_<)
+
+
+
+$\quad$
+## OpenMP learning 
+* 入门 `OpenMP` 相关的基础知识
