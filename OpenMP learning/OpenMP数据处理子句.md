@@ -6,6 +6,8 @@
 [4. threadprivate子句](#4-threadprivate子句)
 [5. shared子句](#5-shared子句)
 [6. default子句](#default子句)
+[7. reduction子句](#7-reduction子句)
+[8. copyin子句](#8-copyin子句)
 
 
 ---
