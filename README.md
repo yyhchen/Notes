@@ -20,3 +20,9 @@ $\quad$
 $\quad$
 ## OpenMP learning 
 * 入门 `OpenMP` 相关的基础知识
+
+
+
+$\quad$
+## Git-learning 
+* 记录 `git` 语法积累和一些常见错误
