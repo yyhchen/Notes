@@ -50,7 +50,7 @@ class NodeVisitor(object):
         visitor = self._method_cache.get(node.__class__.__name__, None)
         if visitor is None:
             method = 'visit_' + node.__class__.__name__  # 这里拿到的是类名 就比如FuncDey, TypeDecl，FuncCall这样的
-            visitor = getattr(self, method, self.generic_visit)   # 如果method匹配不到，就选择generic_visit方法；这句代码，是能够拿到visit_xx方法的关键
+            visitor = getattr(self, method, self.generic_visit)   # 如果method匹配不到，就选择generic_visit方法；这句代码，是能够拿到visit_xx方法的关键 (self本身是NodeVisitor的实例)
             self._method_cache[node.__class__.__name__] = visitor
 
         return visitor(node)
