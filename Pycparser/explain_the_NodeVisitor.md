@@ -38,7 +38,7 @@ class NodeVisitor(object):
             (the ast module of Python 3.0)
     """
 
-    _method_cache = None
+    _method_cache = None    # 缓存已经访问过的节点类型，避免 每次访问相同节点类型都动态查找（提高速度）
 
     def visit(self, node):
         """ Visit a node.
@@ -53,7 +53,7 @@ class NodeVisitor(object):
             visitor = getattr(self, method, self.generic_visit)   # 如果method匹配不到，就选择generic_visit方法；这句代码，是能够拿到visit_xx方法的关键 (self本身是NodeVisitor的实例)
             self._method_cache[node.__class__.__name__] = visitor
 
-        return visitor(node)
+        return visitor(node)    # 这里的visitor是自己实现对应的 visit_xxx方法 其中xxx就是node的根节点名字
 
     def generic_visit(self, node):
         """ Called if no explicit visitor function exists for a
