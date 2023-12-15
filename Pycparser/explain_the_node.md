@@ -310,3 +310,48 @@ Compound(block_items=[FuncCall(name=ID(name='foo'
 
 此AST描述了一个包含两个函数定义的C语言源文件。第一个函数是 `foo`，它没有参数，没有函数体；第二个函数是 `main`，它调用了 `foo` 函数，并在函数体中包含了一个返回语句。
 
+
+
+---
+
+# 上面的举例没有包含 for 节点的，下面举例带有for循环的例子
+
+**在 `pycparser` 的 `c_ast.py` 文件中，基本上都是 ast 各个节点的访问表示**
+<br>
+比如 `c_ast.py` 中的 `Class For`：
+```python
+class For(Node):
+    __slots__ = ('init', 'cond', 'next', 'stmt', 'coord', '__weakref__')
+    def __init__(self, init, cond, next, stmt, coord=None):
+        self.init = init
+        self.cond = cond
+        self.next = next
+        self.stmt = stmt
+        self.coord = coord
+
+    def children(self):
+        nodelist = []
+        if self.init is not None: nodelist.append(("init", self.init))
+        if self.cond is not None: nodelist.append(("cond", self.cond))
+        if self.next is not None: nodelist.append(("next", self.next))
+        if self.stmt is not None: nodelist.append(("stmt", self.stmt))
+        return tuple(nodelist)
+
+    def __iter__(self):
+        if self.init is not None:
+            yield self.init
+        if self.cond is not None:
+            yield self.cond
+        if self.next is not None:
+            yield self.next
+        if self.stmt is not None:
+            yield self.stmt
+
+    attr_names = ()
+```
+
+**可以看到，有五个属性：`init`, `cond`, `next`, `stmt`, `coord`**
+
+我们找一个之前就提取好的展示（非常规采取）：
+![Alt text](image-6.png)
+
