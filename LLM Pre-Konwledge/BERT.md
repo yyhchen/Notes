@@ -1,5 +1,7 @@
 # 重新复习 BERT 的一些收获
 
+[有篇博客讲的特别详细](https://blog.csdn.net/yjw123456/article/details/120232707)
+
 ---
 
 ### BERT中 [CLS] 的作用
