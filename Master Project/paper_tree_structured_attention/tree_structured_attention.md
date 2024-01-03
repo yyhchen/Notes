@@ -151,7 +151,7 @@ $$\overline{N}'=\mathcal{V}(\mathcal{U}(\mathbf{S}+\mathbf{E}),\boldsymbol{w})\q
 #### 4.3 Subtree Masking
 屏蔽注意力是一种常见的做法，用于过滤掉无关的信号。例如，在Transformer的解码器自注意力层中，将查询qi和键kj之间的关联值关闭，以避免在推理过程中关注未来的键，因为它们在推理期间不可用。这可以通过向 $\boldsymbol{q}_{i}^{T}\boldsymbol{k}_{j}$ 添加一个负无穷大的值（-∞）来实现，从而使得softmax后的注意力权重变为零。
 
-在基于树的注意力的背景下（接下来将描述），**我们通过引入编码器自注意力的子树掩码来提升自下而上的结构**。也就是说，如果一个节点查询 $q_i^\mathcal{N}\in \mathcal{N}$ 正在关注一组节点键 $k_j^\mathcal{N}$ ∈ $\mathcal{N}$ 和叶子键 $k_j^\mathcal{L}$ ∈ $\mathcal{L}$，那么只有关键对的关联键属于以$q_i^\mathcal{N}$为根的子树时，注意力才会打开。**换句话说，每个节点查询只能访问其自己的子树后代，而不能访问其祖先和兄弟**。另一方面，如果一个叶子查询$q_i^\mathcal{L}$ ∈ $\mathcal{L}$ 正在进行关注，那么只有叶子键会被打开，就像在Transformer中一样。**图3**用一个例子说明了子树掩码。更正式地说，给定$a_{ij}$作为节点/叶子查询 $q_i$ ∈ N ∪ L和节点/叶子键 $k_j$ ∈ N ∪ L之间的关联值，掩码函数µ定义为：
+在基于树的注意力的背景下（接下来将描述），**我们通过引入编码器自注意力的子树掩码来提升自下而上的结构**。也就是说，如果一个节点查询 $q_i^\mathcal{N}\in \mathcal{N}$ 正在关注一组节点键 $k_j^\mathcal{N}$ ∈ $\mathcal{N}$ 和叶子键 $k_j^\mathcal{L}$ ∈ $\mathcal{L}$，那么只有关键对的关联键属于以$q_i^\mathcal{N}$为根的子树时，注意力才会打开。*换句话说，每个节点查询只能访问其自己的子树后代，而不能访问其祖先和兄弟*。另一方面，如果一个叶子查询$q_i^\mathcal{L}$ ∈ $\mathcal{L}$ 正在进行关注，那么只有叶子键会被打开，就像在Transformer中一样。**图3**用一个例子说明了子树掩码。更正式地说，给定$a_{ij}$作为节点/叶子查询 $q_i$ ∈ N ∪ L和节点/叶子键 $k_j$ ∈ N ∪ L之间的关联值，掩码函数µ定义为：
 
 $\quad$
 $$\left.\mu(a_{ij})=\left\{\begin{array}{ll}a_{ij}&\text{if}\left(q_i\in\mathcal{N}\text{and}k_j\in\mathcal{R}(q_i)\right)\text{or}\left(q_i,k_j\in\mathcal{L}\right)\\a_{ij}-\infty&\text{otherwise}.\end{array}\right.\right.$$
