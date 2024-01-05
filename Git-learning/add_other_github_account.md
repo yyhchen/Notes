@@ -62,3 +62,9 @@ git config --local user.email
 ```
 
 然后再 使用 `git clone git@github_yyhchen: 用户名/仓库名.git` 即可 
+
+
+<br>
+
+
+### 最后，千万要记住！！！ 如果到原来的电脑上更新仓库，必须先 `git pull origin main` !!!
