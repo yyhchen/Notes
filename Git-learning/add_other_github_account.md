@@ -61,7 +61,7 @@ git config --local user.name
 git config --local user.email
 ```
 
-然后再 使用 `git clone git@github_yyhchen: 用户名/仓库名.git` 即可 
+然后再 使用 `git clone git@github_yyhchen.com: 用户名/仓库名.git` 即可 
 
 
 <br>
