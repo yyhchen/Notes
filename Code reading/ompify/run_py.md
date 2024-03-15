@@ -411,3 +411,299 @@ dfg_to_code = [(2, 5), (6, 9)]
 ```
 
 这样，我们就完成了从原始DFG到模型输入所需格式的转换，同时保留了代码结构和数据流的关键信息。
+
+
+<br>
+<br>
+
+
+
+## 三、 `TextDataset` 类
+---
+
+在`TextDataset`类中的`__getitem__`方法负责从数据集中获取单个样本，并将其准备成模型训练或评估所需的格式。这个过程涉及到构建一个针对自注意力机制的掩码（attention mask），用于指导模型在处理输入时对哪些部分给予关注。下面详细解释这个方法中的各个步骤和其背后的逻辑。
+
+### 计算注意力掩码（attention mask）
+
+```python
+attn_mask_1 = np.zeros((self.args.code_length+self.args.data_flow_length,
+                        self.args.code_length+self.args.data_flow_length), dtype=bool)
+```
+- 这里初始化了一个二维的`numpy`数组`attn_mask_1`，其形状由代码长度(`code_length`)和数据流长度(`data_flow_length`)参数确定。这个掩码用于指示在自注意力机制中，序列的哪些部分可以被哪些部分“看到”。初始化为`False`（在`numpy`中用`0`表示）意味着默认不允许任何部分相互注意。
+
+### 计算节点索引和输入的最大长度
+
+```python
+node_index = sum([i > 1 for i in self.examples[item].position_idx_1])
+max_length = sum([i != 1 for i in self.examples[item].position_idx_1])
+```
+- `node_index`计算了序列中非特殊令牌（即代码和数据流图节点令牌）的数量。这对于后续确定哪部分序列可以相互注意是必要的。
+- `max_length`计算了除了填充令牌以外的序列长度，这有助于限制注意力的范围仅到实际的序列长度。
+
+### 设置序列内部的自注意
+
+```python
+attn_mask_1[:node_index,:node_index] = True
+```
+- 这一步使得序列中的非特殊令牌（即直到`node_index`为止的部分）可以相互注意，即序列内的代码和数据流图节点令牌可以参与到自注意力机制中。
+
+### 特殊令牌对所有令牌的注意
+
+```python
+for idx, i in enumerate(self.examples[item].input_ids_1):
+    if i in [0, 2]:
+        attn_mask_1[idx, :max_length] = True
+```
+- 这里循环遍历输入ID序列，对于特殊令牌（例如，假设ID为`0`和`2`的令牌是特殊令牌），允许它们对序列中的所有令牌进行注意。这通常用于CLS令牌，它需要关注整个序列来获取全局信息。
+
+### 代码令牌与数据流图节点之间的相互注意
+
+```python
+for idx, (a, b) in enumerate(self.examples[item].dfg_to_code_1):
+    if a < node_index and b < node_index:
+        attn_mask_1[idx + node_index, a:b] = True
+        attn_mask_1[a:b, idx + node_index] = True
+```
+- 这一步设置了数据流图节点和代码令牌之间的注意力连接。如果一个数据流图节点对应于代码中的一段范围，则这段范围内的代码令牌和该数据流图节点可以相互注意。
+
+### 数据流图节点之间的相互注意
+
+```python
+for idx, nodes in enumerate(self.examples[item].dfg_to_dfg_1):
+    for a in nodes:
+        if a + node_index < len(self.examples[item].position_idx_1):
+            attn_mask_1[idx + node_index, a + node_index] = True
+```
+- 最后，这部分代码设置了数据流图节点之间的相互注意。如果数据流图中的节点彼此相连，则它们也可以相互注意。
+
+### 返回处理后的样本数据
+
+函数返回一个元组，包含了处理后的输入ID序列、位置索引序列、注意力掩码、以及其他可能的标签信息，这些都是模型训练或评估所需要的。
+
+这个方法的实现细节提供了一种灵活的方式来控制模型在处理序列时的注意力分配，特别是在涉及到复杂输入如代码和数据流图时，这种控制能力尤其重要。
+
+
+### 举例解释
+
+让我们通过一个具体的例子来详细理解`TextDataset`类中`__getitem__`方法中提到的每一句代码的作用，尤其是如何构造注意力掩码(`attn_mask_1`)。
+
+假设我们有以下简化的输入数据：
+
+- 代码长度限制(`code_length`): 4
+- 数据流长度限制(`data_flow_length`): 2
+- 示例的输入ID序列(`input_ids_1`): `[101, 1, 2, 102, 0, 0]`，其中`101`和`102`代表特殊令牌CLS和SEP，`1`和`2`代表代码令牌，`0`代表填充。
+- 位置索引序列(`position_idx_1`): `[1, 2, 3, 4, 1, 1]`
+- 数据流图到代码的映射(`dfg_to_code_1`): `[(1, 2)]`，表示有一个数据流节点与代码令牌序列中位置为1到2的部分相关。
+- 数据流图节点之间的关系(`dfg_to_dfg_1`): `[[]]`，表示这里只有一个数据流图节点，且没有与其他节点的直接关系。
+
+### 构造注意力掩码(`attn_mask_1`)
+
+首先，初始化一个6x6的全`False`（在这个上下文中用`0`表示）的矩阵，因为`code_length + data_flow_length = 4 + 2 = 6`。
+
+```python
+attn_mask_1 = np.zeros((6, 6), dtype=bool)
+```
+
+### 计算节点索引和输入的最大长度
+
+计算非特殊令牌和非填充令牌的数量：
+
+```python
+node_index = 2  # 仅[1, 2]是非特殊令牌
+max_length = 4  # [101, 1, 2, 102]，忽略填充
+```
+
+### 设置序列内部的自注意
+
+```python
+attn_mask_1[:2, :2] = True
+```
+这使得非特殊令牌[1, 2]可以相互注意。
+
+### 特殊令牌对所有令牌的注意
+
+```python
+attn_mask_1[0, :4] = True
+attn_mask_1[3, :4] = True
+```
+CLS和SEP令牌可以注意到除填充之外的所有令牌。
+
+### 代码令牌与数据流图节点之间的相互注意
+
+```python
+attn_mask_1[4, 1:2] = True
+attn_mask_1[1:2, 4] = True
+```
+数据流图节点（现在在位置4）可以与代码令牌序列中位置为1到2的部分相互注意。
+
+### 数据流图节点之间的相互注意
+
+在这个例子中，由于只有一个数据流图节点，且它没有与其他节点的直接关系，所以不需要设置节点间的相互注意。
+
+### 返回处理后的样本数据
+
+最后，`__getitem__`方法返回处理后的数据，包括输入ID序列、位置索引序列、构造的注意力掩码，以及其他标签（在这个简化的例子中没有展示）。
+
+通过这个例子，我们可以看到`__getitem__`方法是如何准备模型需要的数据，尤其是如何构造注意力掩码以指导模型在处理输入时的注意力分配。这种方式为模型提供了关于代码结构和数据流信息的重要线索，有助于提高模型对代码语义的理解。
+
+
+### 我向你解释得不够清楚，让我重新解释一下这部分：
+
+在构建注意力掩码(`attn_mask_1`)的过程中，特殊令牌（如CLS和SEP）被允许“关注”（即在自注意力机制中考虑）序列中的所有其他非填充令牌。这是为了让特殊令牌能够捕获整个序列的全局信息。这里的描述是基于一个假设示例，而不是直接对应于提供的代码示例，所以可能会导致理解上的混淆。
+
+假设我们有一个输入序列`[CLS, 1, 2, SEP, PAD, PAD]`，其对应的ID序列为`[101, 1, 2, 102, 0, 0]`（这里`101`代表CLS令牌，`102`代表SEP令牌，`0`代表填充令牌PAD）。在注意力掩码矩阵`attn_mask_1`中，我们需要设置使得CLS和SEP令牌能够关注到其他所有非填充令牌。
+
+在我的之前的描述中，我提到：
+
+```python
+attn_mask_1[0, :4] = True
+attn_mask_1[3, :4] = True
+```
+
+这段代码的意图是设置注意力掩码以允许CLS和SEP令牌关注序列中的非填充部分（包括代码令牌和可能的数据流图节点信息）。然而，这种设置方式可能不直接适用于实际的代码示例中的索引方式，特别是如果我们没有准确定义特殊令牌的索引或者示例中的填充策略有所不同。
+
+### 更准确的解释应该是：
+
+给定一个具体的输入ID序列和构建的注意力掩码`attn_mask_1`，我们的目标是允许特殊令牌（如CLS和SEP）可以“看到”序列中的所有其他令牌，除了填充令牌PAD。
+
+**如果CLS和SEP的索引分别为0和某个具体的位置，那么我们需要在`attn_mask_1`中对应地设置这些行，以允许它们关注到序列中所有非填充的令牌**。
+
+实际的设置应该基于特殊令牌的实际索引和序列中非填充令牌的实际范围来决定。如果CLS位于索引0，我们假设SEP位于索引3（如示例`[101, 1, 2, 102, 0, 0]`），且整个序列的有效长度（非填充部分）为4，则CLS和SEP应该关注前4个令牌（包括它们自己和代码令牌），这就是上述代码段意图达到的效果。
+
+希望这次解释更清楚一些。如果仍有疑问，请随时告诉我。
+
+
+<br>
+<br>
+
+
+
+## 四、`train` 函数
+---
+`train`函数是`run.py`脚本中用于训练模型的核心函数。它负责设置和执行模型的训练流程，包括准备数据、设置优化器和学习率调度器、执行训练循环、保存模型等。以下是对该函数各部分的详细解释：
+
+### 准备数据加载器
+
+```python
+train_sampler = RandomSampler(train_dataset)
+train_dataloader = DataLoader(train_dataset, sampler=train_sampler, batch_size=args.train_batch_size, num_workers=4)
+```
+- 使用随机采样器(`RandomSampler`)对训练数据集进行采样。
+- 创建`DataLoader`来批量加载数据，使用`train_sampler`作为采样器，并设置批处理大小和并行加载数据的工作进程数。
+
+### 设置训练参数
+
+```python
+args.max_steps = args.epochs * len(train_dataloader)
+args.save_steps = len(train_dataloader) // 10
+args.warmup_steps = args.max_steps // 5
+```
+- `max_steps`是根据总的训练周期(`epochs`)和每个周期的批次数计算得到的总训练步骤数。
+- `save_steps`定义了每隔多少步骤保存一次模型。
+- `warmup_steps`是学习率预热期间的步骤数，用于逐渐增加学习率到初始值的过程。
+
+### 配置优化器和学习率调度器
+
+```python
+optimizer = AdamW(optimizer_grouped_parameters, lr=args.learning_rate, eps=args.adam_epsilon)
+scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=args.warmup_steps, num_training_steps=args.max_steps)
+```
+- 使用AdamW优化器，并设置学习率和epsilon参数。
+- 配置一个线性预热和衰减的学习率调度器。
+
+### 多GPU训练设置
+
+```python
+if args.n_gpu > 1:
+    model = torch.nn.DataParallel(model)
+```
+- 如果有多个GPU可用，使用`DataParallel`来并行化模型训练。
+
+### 训练循环
+
+```python
+for idx in range(args.epochs): 
+    # 这里省略了替换率设置和日志记录代码
+    for step, batch in enumerate(tqdm(train_dataloader, total=len(train_dataloader))):
+        # 数据加载到设备，执行前向传播，计算损失
+        loss.backward() # 反向传播
+        torch.nn.utils.clip_grad_norm_(model.parameters(), args.max_grad_norm) # 梯度裁剪
+        if (step + 1) % args.gradient_accumulation_steps == 0:
+            optimizer.step() # 更新模型参数
+            optimizer.zero_grad() # 清空梯度
+            scheduler.step() # 更新学习率
+```
+- 对每个epoch，遍历`train_dataloader`中的所有批次数据，执行模型的前向传播和反向传播，计算损失并更新模型参数。
+- 使用梯度累积来处理大于GPU内存限制的大批次数据。
+
+### 保存模型
+
+```python
+if results['eval_f1'] > best_f1:
+    # 保存模型的逻辑
+```
+- 在训练过程中，根据验证集上的F1分数来保存表现最好的模型。
+
+整个`train`函数通过这些步骤，实现了模型的训练流程，包括数据的加载和预处理、模型的更新和优化、以及基于性能指标保存最佳模型的逻辑。
+
+<br>
+<br>
+
+### 其中需要解析 ratio 参数的意思
+这行代码用于决定在训练过程中对数据进行变换的比率（`ratio`），它是动态调整的，依据当前的训练周期（epoch）`idx`来选择。具体来说：
+
+```python
+ratio = ratios[idx] if idx < len(ratios) else 0.3
+```
+
+- `ratios`是一个列表，提前定义了在不同训练周期应用的变换比率。
+- `idx`是当前的训练周期索引（从0开始）。
+- 这行代码的逻辑是：如果当前训练周期的索引小于`ratios`列表的长度，那么将使用`ratios`列表中对应索引的值作为`ratio`；如果当前训练周期的索引超出了`ratios`列表的长度，那么将默认使用`0.3`作为`ratio`。
+
+### 示例解释
+
+假设`ratios`被定义为`[0, 0.05, 0.15, 0.3]`，意味着：
+
+- 在第1个训练周期（`idx=0`），`ratio`将被设置为`0`（不进行任何变换）。
+- 在第2个训练周期（`idx=1`），`ratio`将被设置为`0.05`（变换5%的数据）。
+- 在第3个训练周期（`idx=2`），`ratio`将被设置为`0.15`。
+- 在第4个训练周期（`idx=3`），`ratio`将被设置为`0.3`。
+- 如果训练周期超过4个，比如第5个训练周期（`idx=4`），因为`idx`已经超出了`ratios`列表的长度，所以`ratio`将被设置为默认值`0.3`。
+
+这种策略允许在训练初期使用较小的数据变换比率，随着训练的进行逐渐增加变换比率，直到某个点后保持固定。这样的设计旨在动态调整数据的变化程度，可能是为了在训练过程中引入适当的变化以提高模型的泛化能力，同时避免过早地引入太大的变化可能导致的不稳定性。
+
+
+### 举例解释 （其实就是课程学习训练的 使用）
+我之前的解释可能不够清楚，让我详细说明一下`ratio`在这个上下文中的作用。
+
+在训练深度学习模型，特别是处理自然语言处理（NLP）或代码理解任务时，一个常见的策略是对输入数据进行某种形式的动态修改或数据增强，以提高模型的泛化能力。这些修改可能包括但不限于替换、插入或删除数据中的某些元素，比如单词、字符或者在代码理解任务中的变量名。
+
+在`train`函数中提到的`ratio`变量，其代表的是在当前训练周期（epoch）中，对输入数据进行变换的比率。换句话说，这个比率定义了应该对多大比例的数据进行某种形式的修改。
+
+### 举个例子：
+
+假设我们正在处理一个代码理解任务，我们有一段原始的代码样本：
+
+```python
+int x = 5;
+if (x > 0) {
+    return true;
+}
+```
+
+如果我们设置`ratio=0.1`（10%），这意味着我们希望在这个训练周期中，对大约10%的数据进行某种形式的变换。具体到代码样本中，这可能意味着修改变量名、调整代码结构、引入轻微的语法变化等，以产生新的训练样本：
+
+```python
+int y = 5; // 变量名x变为y
+if (y > 0) {
+    return true;
+}
+```
+
+这种变换可以帮助模型学会不仅仅依赖于特定的变量名或代码结构，从而提高其对未见过代码样本的泛化能力。
+
+### 在`train`函数中的作用：
+
+在提到的`train`函数片段中，`ratio`是根据当前的训练周期动态选择的，这样可以在训练过程中逐渐增加数据变换的比例，或在某些周期中应用特定的变换策略。这种动态调整变换比率的策略可能旨在平衡学习新特征的需求和保持训练稳定性之间的关系。
+
+简而言之，`ratio`在这里控制的不是训练数据的量，而是在训练过程中对数据应用变换的程度。通过这种方式，可以增加训练数据的多样性，有助于提高模型对新、未见过数据的处理能力。
