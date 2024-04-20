@@ -6,10 +6,24 @@ $\quad$
 ## Compiler
 * 编译的一些知识(目前都是龙书)
 
+$\quad$
+## Coding
+* 刷题日记，包括每日一题 和 剑指offer 150题
+
+$\quad$
+## NLP review
+- 准备NLP相关面试算法、八股等
+  - algorithm
+  - base
+  - LoRA
+  - machine learning
+  - math
+
 
 $\quad$
 ## learn-markdown
 * 常用的一些`markdown`语法
+
 
 $\quad$
 ## LLM Pre-Konwledge
