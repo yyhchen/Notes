@@ -1,6 +1,8 @@
 # Transformer-XL
 
-[Transformer-xl: Attentive language models beyond a fixed-length context](https://arxiv.org/abs/1901.02860)
+- [Transformer-xl: Attentive language models beyond a fixed-length context](https://arxiv.org/abs/1901.02860)
+
+- [Transformer-XL及其进化XLNet](https://zhuanlan.zhihu.com/p/355366424)
 
 ---
 
