@@ -1,6 +1,6 @@
 # Notes
 
-尝试用`vscode`+`markdown`形式写笔记
+用`vscode`+`markdown`形式写笔记, 平时的技术积累，paper阅读等
 
 $\quad$
 ## Compiler
