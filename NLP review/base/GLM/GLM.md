@@ -1,5 +1,6 @@
 # GLM（Generative Language Model） 模型
 
+[GLM：ChatGLM的基座模型](https://zhuanlan.zhihu.com/p/618166630)
 
 ---
 
@@ -25,3 +26,20 @@ Autoregressive blank infilling 是一种用于训练语言模型的方法，它�
 
 
 Autoregressive blank infilling 方法迫使模型学习如何根据上下文信息生成连续的 token 序列，这有助于提高模型对语言的理解和生成能力。这种方法在训练过程中可以增加模型的不确定性，迫使模型更加全面地学习语言的各种特征。
+
+
+
+<br>
+<br>
+<br>
+
+
+### GLM 模型架构
+**GLM使用单个Transformer，并对架构进行了修改:**
+
+(1)调整layer normalization和residual connection的顺序。(先归一化，再残差连接)
+
+(2)使用单一线性层进行输出token预测。
+
+(3)将ReLU激活函数替换为GeLUs。
+
