@@ -68,3 +68,12 @@ git config --local user.email
 
 
 ### 最后，千万要记住！！！ 如果到原来的电脑上更新仓库，必须先 `git pull origin main` !!!
+
+
+
+# 在当前情况新增github仓库
+
+---
+
+1. github 先创好仓库
+2. git remote add origin 的时候，这里用上 之前定义的 hostname, 即完整的应该是 `git clone git@github_yyhchen: 用户名/仓库名.git` ; 否则会报错！！
