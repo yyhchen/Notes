@@ -76,4 +76,4 @@ git config --local user.email
 ---
 
 1. github 先创好仓库
-2. git remote add origin 的时候，这里用上 之前定义的 hostname, 即完整的应该是 `git clone git@github_yyhchen: 用户名/仓库名.git` ; 否则会报错！！
+2. git remote add origin 的时候，这里用上 之前定义的 hostname, 即完整的应该是 `git clone git@github_yyhchen.com: 用户名/仓库名.git` ; 否则会报错！！
