@@ -12,12 +12,15 @@ $\quad$
 
 $\quad$
 ## NLP review
-- 准备NLP相关面试算法、八股等
+- 准备NLP相关面试算法、八股等 (持续更新...)
   - algorithm
   - base
-  - LoRA
+  - **fine-tuned**
   - machine learning
   - math
+  - **AI Compiler**
+  - **model deploy and accumulation**
+  - **RAG related**
 
 
 $\quad$
@@ -55,3 +58,8 @@ $\quad$
 $\quad$
 ## Master Project
 * 一些paper记录
+
+
+$\quad$
+## langchain
+* langchain 学习使用
