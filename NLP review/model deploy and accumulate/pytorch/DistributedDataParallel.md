@@ -70,3 +70,10 @@ DistributedDataParallel（DDP）是PyTorch中的一种并行训练方法，它�
 <br>
 <br>
 
+
+
+## 在 `transformers` 库使用 DDP 和 DP
+
+在 `transformers` 库中，无论是 `DP` 还是 `DDP` 使用的代码是一致的, 那么程序要怎么区分到底是 ``DP`` 还是 `DDP` 呢?
+
+在于启动方式的不一样，使用  命令 `torchrun --nproc_per_node=2 ddp.py` 即可使用 `DDP`, 默认用 `python dp.py` 启动的文件是 `DP`
