@@ -14,6 +14,10 @@ $$\text{LeakyReLU}\left(\mathrm{x}\right)=\begin{cases} \mathrm{x}&\text{, x > 0
 
 其中，α是一个很小的正数，通常设置为0.01左右。
 
+如下图所示：
+![LeakyReLU](/NLP%20review/assets/LeakyReLU.png)
+
+
 <br>
 
 ### Leaky ReLU的优点
