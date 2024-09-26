@@ -15,6 +15,12 @@
 
 ---
 
+![attention difference](/NLP%20review/assets/mha_mqa_gqa.png)
+> [GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints](https://arxiv.org/abs/2305.13245v3) 中列出的图，很清楚表示了三者的区别和联系; GQA 是另外两种的折中选择
+
+
+<br>
+
 
 在深度学习中，特别是自然语言处理（NLP）领域，多头注意力机制（Multi-Head Attention, MHA）、多头查询注意力机制（Multi-Query Attention, MQA）和分组查询注意力机制（Grouped-Query Attention, GQA）是三种常见的注意力机制变体。它们在处理序列数据时各有特点，下面我将分别介绍它们的内容，然后再讨论它们的区别和联系。
 
