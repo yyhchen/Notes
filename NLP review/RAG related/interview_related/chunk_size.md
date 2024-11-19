@@ -1,7 +1,15 @@
 # RAG中chunk size
 
+目录：
 - [怎么考虑切分chunk size的大小？](#怎么考虑切分chunk-size的大小)
 - [怎么选择合适的chunk size呢？你顺便能讲讲动态chunking策略是什么吗](#)
+  
+
+<br>
+参考资料:
+
+[分块之难：RAG应用中的Chunking技术解析](https://blog.csdn.net/m0_59164520/article/details/139841565)
+
 
 ---
 
