@@ -9,24 +9,24 @@
 
 #### 1.1 **BLEU (Bilingual Evaluation Understudy)**
    - **定义**：BLEU是一种常用的机器翻译和文本生成评估指标，通过比较生成文本与参考文本的n-gram重叠度来评估生成质量。
-   - **公式**：\[ \text{BLEU} = \min\left(1, \frac{\text{生成文本长度}}{\text{参考文本长度}}\right) \left(\prod_{i=1}^{N} \text{Precision}_i\right)^{\frac{1}{N}} \]
+   - **公式**： $$\text{BLEU} = \min\left(1, \frac{\text{生成文本长度}}{\text{参考文本长度}}\right) \left(\prod_{i=1}^{N} \text{Precision}_i\right)^{\frac{1}{N}}$$
    - **解释**：BLEU值越高，表示生成文本与参考文本的相似度越高。
 
 #### 1.2 **ROUGE (Recall-Oriented Understudy for Gisting Evaluation)**
    - **定义**：ROUGE是一种常用的文本摘要评估指标，通过比较生成文本与参考文本的n-gram重叠度来评估生成质量。
-   - **公式**：\[ \text{ROUGE-N} = \frac{\sum_{S \in \{\text{参考文本}\}} \sum_{\text{n-gram} \in S} \text{Count}_{\text{match}}(\text{n-gram})}{\sum_{S \in \{\text{参考文本}\}} \sum_{\text{n-gram} \in S} \text{Count}(\text{n-gram})} \]
+   - **公式**： $$\text{ROUGE-N} = \frac{\sum_{S \in \{\text{参考文本}\}} \sum_{\text{n-gram} \in S} \text{Count}_{\text{match}}(\text{n-gram})}{\sum_{S \in \{\text{参考文本}\}} \sum_{\text{n-gram} \in S} \text{Count}(\text{n-gram})} $$
    - **解释**：ROUGE值越高，表示生成文本与参考文本的重叠度越高。
 
 #### 1.3 **METEOR (Metric for Evaluation of Translation with Explicit ORdering)**
    - **定义**：METEOR是一种综合考虑精确率、召回率和词序的评估指标。
-   - **公式**：\[ \text{METEOR} = F_{\text{mean}} \times (1 - P_{\text{unigram}}) \]
-     - \( F_{\text{mean}} \) 是精确率和召回率的调和平均数。
-     - \( P_{\text{unigram}} \) 是惩罚因子，用于惩罚词序不匹配的情况。
+   - **公式**：\[ $\text{METEOR} = F_{\text{mean}} \times (1 - P_{\text{unigram}})$ \]
+     - \( $F_{\text{mean}}$ \) 是精确率和召回率的调和平均数。
+     - \( $P_{\text{unigram}}$ \) 是惩罚因子，用于惩罚词序不匹配的情况。
    - **解释**：METEOR值越高，表示生成文本的质量越好。
 
 #### 1.4 **Perplexity (困惑度)**
    - **定义**：Perplexity是一种评估语言模型生成文本质量的指标，表示模型对生成文本的不确定性。
-   - **公式**：\[ \text{Perplexity} = 2^{-\frac{1}{N} \sum_{i=1}^{N} \log_2 P(w_i | w_{1:i-1})} \]
+   - **公式**：\[ $\text{Perplexity} = 2^{-\frac{1}{N} \sum_{i=1}^{N} \log_2 P(w_i | w_{1:i-1})}$ \]
    - **解释**：Perplexity值越低，表示生成文本的质量越好。
 
 ### 2. **人工评估**
