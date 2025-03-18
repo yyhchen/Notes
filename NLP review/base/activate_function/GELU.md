@@ -48,6 +48,26 @@ GELU(x) ≈ 0.5 * x * (1 + tanh(sqrt(2/π) * (x + 0.044715x^3)))
 
 <br>
 
+### 公式
+GELU的数学表达式为：
+
+\[ \text{GELU}(x) = x \cdot \Phi(x) \]
+
+其中，\(\Phi(x)\) 是标准正态分布的累积分布函数（CDF），即：
+
+\[ \Phi(x) = \frac{1}{2} \left( 1 + \text{erf} \left( \frac{x}{\sqrt{2}} \right) \right) \]
+
+这里，\(\text{erf}\) 是误差函数。
+
+### 近似计算
+由于GELU的计算涉及误差函数，实际应用中常使用近似公式以提高计算效率。常用的近似公式为：
+
+\[ \text{GELU}(x) \approx 0.5x \left( 1 + \tanh\left( \sqrt{\frac{2}{\pi}} \left( x + 0.044715x^3 \right) \right) \right) \]
+
+
+
+<br>
+
 
 ### GELU与ReLU的对比
 
