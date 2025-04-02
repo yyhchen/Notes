@@ -34,13 +34,15 @@ IdentityFile ~/.ssh/rsa_private
 其中， `Hostname` 是统一的，链接用；`Host` 是 `git@xx` 中的后缀，比如后面需要 `clone` 项目的时候，`git clone git@github_yyhchen: 用户名/仓库名.git` 即可
 
 
-配置完文件后， 用 `git -T git@github_yyhchen.com` 测试，结果如下：
+配置完文件后， 用 `ssh -T git@github_yyhchen.com` 测试，结果如下：
 ```
 Hi yyhchen! You've successfully authenticated, but GitHub does not provide shell access.
 ```
 
 同理，测试原来的账户也是用 `git -T git@自己配的Host`
 
+>[!tip]
+>需要注意的是，如果直接使用 `ssh -T git@github.com` 结果是 yuehuasolo！！
 
 <br>
 
