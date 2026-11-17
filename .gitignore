@@ -1,0 +1,9 @@
+**/.DS_Store
+.obsidian/
+desktop.ini
+
+# iCloud stubs and plugin caches
+*.icloud
+.smart-env/
+.smtcmp_vector_db.tar.gz
+.smtcmp_json_db/
